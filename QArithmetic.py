@@ -67,7 +67,7 @@ def c_rshift(circ, c, a, n=-1):
     # Init n if it was not
     if n == -1:
         n = len(a)
-    
+
     # Iterate through pairs and do swaps.
     for i in range(n,1,-1):
         circ.cswap(c, a[i-1],a[i-2])
@@ -109,7 +109,7 @@ def add(circ, a, b, n):
         for j in range(i,0,-1):
             # If the qubit a[j-1] exists run cu1, if not assume the qubit is 0 and never existed
             if len(a) - 1 >= j - 1:
-                circ.cu1(2*pi/2**(i-j+1), a[j-1], b[i-1])
+                circ.cp(2*pi/2**(i-j+1), a[j-1], b[i-1])
 
     # Take the inverse QFT.
     iqft(circ, b, n)
@@ -162,7 +162,7 @@ def add_ripple(circ, a, b, n):
         sum(circ, c[i], a[i], b[i])
 
 # Adder that takes |a>|b>|0> to |a>|b>|a+b>.
-# |a> has length n. 
+# |a> has length n.
 # |b> has length n.
 # |s> = |0> has length n+1.
 def add_ripple_ex(circ, a, b, s, n):
@@ -333,12 +333,12 @@ def div(circ, p, d, q, n):
 def square(circ, a, b, n=-1):
     if n == -1:
         n = len(a)
-    
+
     # First Addition
     circ.cx(a[0], b[0])
     for i in range(1, n):
         circ.ccx(a[0], a[i], b[i])
-    
+
     # Custom Addition Circuit For Each Qubit of A
     for k in range(1, n):
         # modifying qubits
@@ -353,12 +353,12 @@ def square(circ, a, b, n=-1):
                 if len(a) - 1 < j - 1:
                     pass # skip over non existent qubits
                 elif k == j - 1: # Cannot control twice
-                    circ.cu1(2*pi/2**(i-j+1), a[j-1], d[i-1])
+                    circ.cp(2*pi/2**(i-j+1), a[j-1], d[i-1])
                 else:
                     ccu1(circ, 2*pi/2**(i-j+1), a[k], a[j-1], d[i-1])
-        
+
         iqft(circ, d, n+1)
-                
+
 
 
 
@@ -394,7 +394,7 @@ def power(circ, a, b, finalOut): #Because this is reversible/gate friendly memor
         padFoList = full_qr(foPad)
         foList = full_qr(finalOut)
         finalOut = foList + padFoList
-    
+
     # Create zero bits
     num_recycle = (2 * n * (pow(2, v) - 2)) - (n * pow(2, v)) # 24
     permaZeros = []
@@ -410,9 +410,9 @@ def power(circ, a, b, finalOut): #Because this is reversible/gate friendly memor
         circ.x(b[0])
         circ.cx(b[0], d[0])
         circ.x(b[0])
-    
+
     # iterate through every qubit of b
-    for i in range(1,v): # for every bit of b 
+    for i in range(1,v): # for every bit of b
         for j in range(pow(2, i)):
             # run multiplication operation if and only if b is 1
             bonus = permaZeros[:2*len(d) - len(ancOut)]
